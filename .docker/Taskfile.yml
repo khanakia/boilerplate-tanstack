@@ -1,0 +1,25 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task --list-all
+    silent: true
+
+  down:
+    desc: stop and remove the docker dev container
+    cmds:
+      - docker compose down
+
+  up:
+    desc: rebuild and run the docker dev container
+    cmds:
+      - docker compose up -d --build
+
+  up:force:
+    desc: rebuild and restart the docker dev container
+    cmds:
+      - docker compose down
+      - docker compose up -d --build

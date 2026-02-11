@@ -1,0 +1,18 @@
+name: boilerplate_tanstackstart
+
+services:
+  app:
+    container_name: boilerplate_tanstackstart
+    env_file:
+      - ../.env
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    image: boilerplate_tanstackstart
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - /app/node_modules
+      - ../:/app
