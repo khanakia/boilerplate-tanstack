@@ -10,8 +10,7 @@ export const env = createEnv({
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
-		// DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-		// Add more server-side env vars here
+		DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
 
 		VITE_SENTRY_DSN: z.string().min(1, "VITE_SENTRY_DSN is required"),
 		VITE_SENTRY_ORG: z.string().min(1, "VITE_SENTRY_ORG is required"),
@@ -21,7 +20,7 @@ export const env = createEnv({
 
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
-		// DATABASE_URL: process.env.DATABASE_URL,
+		DATABASE_URL: process.env.DATABASE_URL,
 		VITE_SENTRY_DSN: process.env.VITE_SENTRY_DSN,
 		VITE_SENTRY_ORG: process.env.VITE_SENTRY_ORG,
 		VITE_SENTRY_PROJECT: process.env.VITE_SENTRY_PROJECT,
