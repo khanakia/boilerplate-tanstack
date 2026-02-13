@@ -13,6 +13,15 @@ const config = defineConfig({
 			"@": fileURLToPath(new URL("./src", import.meta.url)),
 		},
 	},
+	nitro: {
+		rollupConfig: {
+			external: [
+				/^@sentry\//,
+				/^@opentelemetry\//,
+				/^@prisma\/instrumentation/,
+			],
+		},
+	},
 	plugins: [
 		devtools(),
 		nitro(),
