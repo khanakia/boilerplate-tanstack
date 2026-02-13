@@ -1,6 +1,6 @@
-import * as Sentry from "@sentry/tanstackstart-react";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import { initSentryClient } from "./integrations/sentry/client";
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider";
 
 // Import the generated route tree
@@ -25,12 +25,7 @@ export const getRouter = () => {
 	});
 
 	if (!router.isServer) {
-		Sentry.init({
-			dsn: import.meta.env.VITE_SENTRY_DSN,
-			integrations: [],
-			tracesSampleRate: 1.0,
-			sendDefaultPii: true,
-		});
+		initSentryClient();
 	}
 
 	return router;

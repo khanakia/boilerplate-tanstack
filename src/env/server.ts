@@ -1,6 +1,7 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod/v4";
 import { drizzleEnv } from "@/integrations/drizzle/env";
+import { sentryEnv } from "@/integrations/sentry/env";
 
 /**
  * Server-side environment variables
@@ -12,11 +13,6 @@ export const env = createEnv({
 			.enum(["development", "test", "production"])
 			.default("development"),
 
-		VITE_SENTRY_DSN: z.string().optional(),
-		VITE_SENTRY_ORG: z.string().optional(),
-		VITE_SENTRY_PROJECT: z.string().optional(),
-		SENTRY_AUTH_TOKEN: z.string().optional(),
-
 		// Internal API key for protected endpoints (/api/i/*)
 		INTERNAL_KEY: z.string().optional(),
 
@@ -27,14 +23,10 @@ export const env = createEnv({
 		VITE_APP_BUILD_TIME: z.string().default("unknown"),
 	},
 
-	extends: [drizzleEnv],
+	extends: [drizzleEnv, sentryEnv],
 
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
-		VITE_SENTRY_DSN: process.env.VITE_SENTRY_DSN,
-		VITE_SENTRY_ORG: process.env.VITE_SENTRY_ORG,
-		VITE_SENTRY_PROJECT: process.env.VITE_SENTRY_PROJECT,
-		SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 		INTERNAL_KEY: process.env.INTERNAL_KEY,
 		VITE_APP_VERSION: process.env.VITE_APP_VERSION,
 		VITE_APP_COMMIT: process.env.VITE_APP_COMMIT,
