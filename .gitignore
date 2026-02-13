@@ -19,9 +19,8 @@ mcp-todos.json
 _keys/*
 !_keys/.gitkeep
 
-# Generated secrets and deploy workflows
+# Generated secrets
 .github/.secrets.*
-.github/workflows/deploy.*.yml
 
 # Generated GraphQL hooks
 src/generated/graphql/graphql.ts
