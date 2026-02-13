@@ -1,0 +1,20 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  generate:
+    desc: Generate Drizzle migrations from schema changes
+    cmd: pnpm drizzle-kit generate
+
+  migrate:
+    desc: Run Drizzle migrations against the database
+    cmd: pnpm tsx src/integrations/drizzle/migrate.ts
+
+  push:
+    desc: Push schema directly to the database (no migrations)
+    cmd: pnpm drizzle-kit push
+
+  studio:
+    desc: Open Drizzle Studio GUI
+    cmd: pnpm drizzle-kit studio

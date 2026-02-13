@@ -11,3 +11,6 @@ includes:
   scripts:
     taskfile: scripts/Taskfile.yml
     dir: ./scripts
+  db:
+    taskfile: src/integrations/drizzle/Taskfile.yml
+    dir: .

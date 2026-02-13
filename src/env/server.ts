@@ -1,5 +1,6 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod/v4";
+import { drizzleEnv } from "@/integrations/drizzle/env";
 
 /**
  * Server-side environment variables
@@ -10,7 +11,6 @@ export const env = createEnv({
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
-		DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
 
 		VITE_SENTRY_DSN: z.string().optional(),
 		VITE_SENTRY_ORG: z.string().optional(),
@@ -27,9 +27,10 @@ export const env = createEnv({
 		VITE_APP_BUILD_TIME: z.string().default("unknown"),
 	},
 
+	extends: [drizzleEnv],
+
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
-		DATABASE_URL: process.env.DATABASE_URL,
 		VITE_SENTRY_DSN: process.env.VITE_SENTRY_DSN,
 		VITE_SENTRY_ORG: process.env.VITE_SENTRY_ORG,
 		VITE_SENTRY_PROJECT: process.env.VITE_SENTRY_PROJECT,
