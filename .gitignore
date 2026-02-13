@@ -23,6 +23,9 @@ _keys/*
 .github/.secrets.*
 .github/workflows/deploy.*.yml
 
+# Generated GraphQL hooks
+src/generated/graphql/graphql.ts
+
 # Scripts build artifacts
 scripts/dist/
 scripts/node_modules/

@@ -1,0 +1,8 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  generate:
+    desc: Generate typed React Query hooks from GraphQL operations
+    cmd: pnpm graphql-codegen --config src/integrations/graphql-codegen/codegen.ts
