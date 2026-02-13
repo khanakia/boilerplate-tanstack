@@ -6,4 +6,4 @@ const t = initTRPC.create({
 })
 
 export const createTRPCRouter = t.router
-export const publicProcedure = t.procedure
+export const baseProcedure = t.procedure

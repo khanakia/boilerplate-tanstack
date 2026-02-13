@@ -1,6 +1,7 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
+	Link,
 	Outlet,
 	createRootRouteWithContext,
 	HeadContent,
@@ -8,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
-import type { TRPCRouter } from "@/integrations/trpc/router";
+import type { TRPCRouter } from "@/integrations/trpc/routers";
 import { Provider } from "../integrations/tanstack-query/root-provider";
 import Header from "../components/Header";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -45,7 +46,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 	component: RootComponent,
 	shellComponent: RootDocument,
+	notFoundComponent: NotFound,
 });
+
+function NotFound() {
+	return (
+		<div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+			<h1 className="text-4xl font-bold">404</h1>
+			<p className="text-lg text-gray-600">Page not found</p>
+			<Link to="/" className="text-blue-500 hover:underline">
+				Go home
+			</Link>
+		</div>
+	);
+}
 
 function RootComponent() {
 	const { queryClient } = Route.useRouteContext();
