@@ -5,6 +5,8 @@ dist-ssr
 *.local
 count.txt
 .env
+.env.*
+!.env.example
 .nitro
 .tanstack
 .wrangler
@@ -12,3 +14,15 @@ count.txt
 .vinxi
 todos.json
 mcp-todos.json
+
+# Keys directory (keep structure, ignore contents)
+_keys/*
+!_keys/.gitkeep
+
+# Generated secrets and deploy workflows
+.github/.secrets.*
+.github/workflows/deploy.*.yml
+
+# Scripts build artifacts
+scripts/dist/
+scripts/node_modules/

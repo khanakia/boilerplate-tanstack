@@ -2,24 +2,247 @@
 
 version: "3"
 
+vars:
+  PROJECT_NAME: boilerplate-tanstack
+  PROD_IMAGE: "{{.PROJECT_NAME}}:latest"
+  REVIEW_PREFIX: "review-"
+
 tasks:
   default:
     cmds:
       - task --list-all
     silent: true
 
+  # ═══════════════════════════════════════
+  # DEVELOPMENT
+  # ═══════════════════════════════════════
   down:
-    desc: stop and remove the docker dev container
+    desc: Stop and remove the docker dev container
     cmds:
       - docker compose down
 
   up:
-    desc: rebuild and run the docker dev container
+    desc: Rebuild and run the docker dev container
     cmds:
       - docker compose up -d --build
 
   up:force:
-    desc: rebuild and restart the docker dev container
+    desc: Force rebuild and restart the docker dev container
     cmds:
       - docker compose down
       - docker compose up -d --build
+
+  rebuild:
+    desc: Rebuild without cache
+    cmds:
+      - docker compose build --no-cache
+
+  logs:
+    desc: Stream dev container logs
+    cmds:
+      - docker compose logs -f
+
+  ps:
+    desc: Show container status
+    cmds:
+      - docker compose ps
+
+  # ═══════════════════════════════════════
+  # PRODUCTION BUILD & RUN
+  # ═══════════════════════════════════════
+  prod:build:
+    desc: Build production Docker image with git version info
+    cmds:
+      - >-
+        docker build
+        --build-arg VERSION={{.VERSION | default "$(git describe --tags 2>/dev/null || echo dev)"}}
+        --build-arg COMMIT=$(git rev-parse --short HEAD)
+        --build-arg BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+        -t {{.PROD_IMAGE}}
+        -f Dockerfile.production ..
+
+  prod:build:nocache:
+    desc: Build production image without cache
+    cmds:
+      - >-
+        docker build --no-cache
+        --build-arg VERSION={{.VERSION | default "$(git describe --tags 2>/dev/null || echo dev)"}}
+        --build-arg COMMIT=$(git rev-parse --short HEAD)
+        --build-arg BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+        -t {{.PROD_IMAGE}}
+        -f Dockerfile.production ..
+
+  prod:run:
+    desc: Run production container locally
+    cmds:
+      - docker stop {{.PROJECT_NAME}} 2>/dev/null || true
+      - docker rm {{.PROJECT_NAME}} 2>/dev/null || true
+      - >-
+        docker run -d
+        --name {{.PROJECT_NAME}}
+        --restart unless-stopped
+        -p ${PORT:-3000}:${PORT:-3000}
+        -e PORT=${PORT:-3000}
+        --env-file ../.env.prod
+        -v $(cd .. && pwd)/_keys:/app/_keys:ro
+        {{.PROD_IMAGE}}
+
+  prod:stop:
+    desc: Stop production container
+    cmds:
+      - docker stop {{.PROJECT_NAME}} 2>/dev/null || true
+      - docker rm {{.PROJECT_NAME}} 2>/dev/null || true
+
+  prod:logs:
+    desc: Stream production container logs
+    cmds:
+      - docker logs -f {{.PROJECT_NAME}}
+
+  prod:shell:
+    desc: Open shell in production container
+    cmds:
+      - docker exec -it {{.PROJECT_NAME}} sh
+
+  # ═══════════════════════════════════════
+  # REVIEW / CODE REVIEW DEPLOYMENTS
+  # ═══════════════════════════════════════
+  review:build:
+    desc: "Build Docker image from a branch (usage: task docker:review:build BRANCH=feature/auth)"
+    requires:
+      vars: [BRANCH]
+    vars:
+      SANITIZED_BRANCH:
+        sh: echo "{{.BRANCH}}" | sed 's/[^a-zA-Z0-9]/-/g'
+      TAG: "{{.PROJECT_NAME}}:{{.REVIEW_PREFIX}}{{.SANITIZED_BRANCH}}"
+    cmds:
+      - |
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        cd ..
+        git checkout {{.BRANCH}}
+        docker build \
+          --build-arg VERSION={{.BRANCH}} \
+          --build-arg COMMIT=$(git rev-parse --short HEAD) \
+          --build-arg BRANCH={{.BRANCH}} \
+          --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+          -t {{.TAG}} \
+          -f .docker/Dockerfile.production .
+        git checkout $CURRENT_BRANCH
+
+  review:up:
+    desc: "Start review container (usage: task docker:review:up BRANCH=feature/auth PORT=3010)"
+    requires:
+      vars: [BRANCH, PORT]
+    vars:
+      SANITIZED_BRANCH:
+        sh: echo "{{.BRANCH}}" | sed 's/[^a-zA-Z0-9]/-/g'
+      CONTAINER_NAME: "{{.REVIEW_PREFIX}}{{.SANITIZED_BRANCH}}"
+      TAG: "{{.PROJECT_NAME}}:{{.REVIEW_PREFIX}}{{.SANITIZED_BRANCH}}"
+    cmds:
+      - docker stop {{.CONTAINER_NAME}} 2>/dev/null || true
+      - docker rm {{.CONTAINER_NAME}} 2>/dev/null || true
+      - >-
+        docker run -d
+        --name {{.CONTAINER_NAME}}
+        --restart unless-stopped
+        -p {{.PORT}}:{{.PORT}}
+        -e PORT={{.PORT}}
+        -e NODE_ENV=production
+        --env-file ../.env.prod
+        -v $(cd .. && pwd)/_keys:/app/_keys:ro
+        --label "review=true"
+        --label "review.branch={{.BRANCH}}"
+        --label "review.port={{.PORT}}"
+        {{.TAG}}
+
+  review:down:
+    desc: "Stop review container (usage: task docker:review:down BRANCH=feature/auth)"
+    requires:
+      vars: [BRANCH]
+    vars:
+      SANITIZED_BRANCH:
+        sh: echo "{{.BRANCH}}" | sed 's/[^a-zA-Z0-9]/-/g'
+      CONTAINER_NAME: "{{.REVIEW_PREFIX}}{{.SANITIZED_BRANCH}}"
+    cmds:
+      - docker stop {{.CONTAINER_NAME}} 2>/dev/null || true
+      - docker rm {{.CONTAINER_NAME}} 2>/dev/null || true
+
+  review:down:all:
+    desc: Stop ALL review containers
+    cmds:
+      - docker rm -f $(docker ps -q --filter "label=review=true") 2>/dev/null || echo "No review containers running"
+
+  review:list:
+    desc: List all running review containers
+    cmds:
+      - docker ps --filter "label=review=true" --format "table {{`{{.Names}}`}}\t{{`{{.Status}}`}}\t{{`{{.Ports}}`}}\t{{`{{.Label \"review.branch\"}}`}}"
+
+  review:up:remote:
+    desc: "Deploy review container to remote VPS"
+    requires:
+      vars: [BRANCH, PORT, VPS_HOST, IMAGE]
+    vars:
+      SANITIZED_BRANCH:
+        sh: echo "{{.BRANCH}}" | sed 's/[^a-zA-Z0-9]/-/g'
+      CONTAINER_NAME: "{{.REVIEW_PREFIX}}{{.SANITIZED_BRANCH}}"
+      VPS_USER: '{{.VPS_USER | default "root"}}'
+    cmds:
+      - >-
+        ssh {{.VPS_USER}}@{{.VPS_HOST}} "
+        docker stop {{.CONTAINER_NAME}} 2>/dev/null || true;
+        docker rm {{.CONTAINER_NAME}} 2>/dev/null || true;
+        docker pull {{.IMAGE}};
+        docker run -d
+        --name {{.CONTAINER_NAME}}
+        --restart unless-stopped
+        -p {{.PORT}}:{{.PORT}}
+        -e PORT={{.PORT}}
+        -e NODE_ENV=production
+        --label review=true
+        --label review.branch={{.BRANCH}}
+        --label review.port={{.PORT}}
+        {{.IMAGE}}"
+
+  review:down:remote:
+    desc: "Stop review container on remote VPS"
+    requires:
+      vars: [BRANCH, VPS_HOST]
+    vars:
+      SANITIZED_BRANCH:
+        sh: echo "{{.BRANCH}}" | sed 's/[^a-zA-Z0-9]/-/g'
+      CONTAINER_NAME: "{{.REVIEW_PREFIX}}{{.SANITIZED_BRANCH}}"
+      VPS_USER: '{{.VPS_USER | default "root"}}'
+    cmds:
+      - >-
+        ssh {{.VPS_USER}}@{{.VPS_HOST}} "
+        docker stop {{.CONTAINER_NAME}} 2>/dev/null || true;
+        docker rm {{.CONTAINER_NAME}} 2>/dev/null || true"
+
+  # ═══════════════════════════════════════
+  # GITHUB ACTIONS LOCAL TESTING (act)
+  # ═══════════════════════════════════════
+  act:list:
+    desc: List workflow jobs
+    cmds:
+      - cd .. && act -l -W .github/workflows/deploy.prod.yml
+
+  act:dry:
+    desc: Dry run workflow
+    cmds:
+      - cd .. && act -n -W .github/workflows/deploy.prod.yml --secret-file .github/.secrets.prod
+
+  act:build-push:
+    desc: Test build-and-push job locally
+    cmds:
+      - cd .. && act -j build-and-push -W .github/workflows/deploy.prod.yml --secret-file .github/.secrets.prod
+
+  act:deploy:
+    desc: Test deploy job locally
+    cmds:
+      - cd .. && act -j deploy -W .github/workflows/deploy.prod.yml --secret-file .github/.secrets.prod
+
+  act:full:
+    desc: Run full workflow locally
+    cmds:
+      - cd .. && act -W .github/workflows/deploy.prod.yml --secret-file .github/.secrets.prod

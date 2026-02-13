@@ -1,0 +1,49 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  gh:secrets:list:
+    desc: List available environments
+    cmds:
+      - pnpm tsx src/index.ts gh:secrets:list
+
+  gh:secrets:update:
+    desc: Build secrets and generate deploy.yml
+    cmds:
+      - pnpm tsx src/index.ts gh:secrets:update {{.CLI_ARGS}}
+
+  gh:secrets:push:
+    desc: Push secrets to GitHub Environments
+    cmds:
+      - pnpm tsx src/index.ts gh:secrets:push {{.CLI_ARGS}}
+
+  gh:secrets:read:
+    desc: Display secret keys (values hidden)
+    cmds:
+      - pnpm tsx src/index.ts gh:secrets:read {{.CLI_ARGS}}
+
+  gh:secrets:clean:
+    desc: Remove orphan secrets from GitHub
+    cmds:
+      - pnpm tsx src/index.ts gh:secrets:clean {{.CLI_ARGS}}
+
+  gh:env:setup:
+    desc: Full environment setup
+    cmds:
+      - pnpm tsx src/index.ts gh:env:setup {{.CLI_ARGS}}
+
+  gh:env:create:
+    desc: Create GitHub Environment
+    cmds:
+      - pnpm tsx src/index.ts gh:env:create {{.CLI_ARGS}}
+
+  gh:env:normalize:
+    desc: Normalize branch name to env name
+    cmds:
+      - pnpm tsx src/index.ts gh:env:normalize {{.CLI_ARGS}}
+
+  env:generate:
+    desc: Generate .env.{env} from .env.example
+    cmds:
+      - pnpm tsx src/index.ts env:generate {{.CLI_ARGS}}

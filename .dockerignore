@@ -2,6 +2,13 @@ node_modules
 .output
 .git
 .env
+.env.*
 .DS_Store
 dist
 build
+_keys
+scripts
+.github
+*.md
+TASKS.md
+docs

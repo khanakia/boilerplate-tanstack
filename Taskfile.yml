@@ -8,3 +8,6 @@ includes:
   docker:
     taskfile: .docker/Taskfile.yml
     dir: ./.docker
+  scripts:
+    taskfile: scripts/Taskfile.yml
+    dir: ./scripts
