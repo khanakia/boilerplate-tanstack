@@ -15,6 +15,7 @@ import { Route as DemoTrpcTodoRouteImport } from './routes/demo/trpc-todo'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoStoreRouteImport } from './routes/demo/store'
+import { Route as DemoOrpcTodoRouteImport } from './routes/demo/orpc-todo'
 import { Route as DemoMcpTodosRouteImport } from './routes/demo/mcp-todos'
 import { Route as ApiVersionRouteImport } from './routes/api.version'
 import { Route as ApiHealthRouteImport } from './routes/api.health'
@@ -27,6 +28,7 @@ import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
 import { Route as DemoApiMcpTodosRouteImport } from './routes/demo/api.mcp-todos'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api.trpc.$'
+import { Route as ApiOrpcSplatRouteImport } from './routes/api.orpc.$'
 import { Route as ApiIBootinfoRouteImport } from './routes/api.i.bootinfo'
 import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
 import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
@@ -61,6 +63,11 @@ const DemoTableRoute = DemoTableRouteImport.update({
 const DemoStoreRoute = DemoStoreRouteImport.update({
   id: '/demo/store',
   path: '/demo/store',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoOrpcTodoRoute = DemoOrpcTodoRouteImport.update({
+  id: '/demo/orpc-todo',
+  path: '/demo/orpc-todo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoMcpTodosRoute = DemoMcpTodosRouteImport.update({
@@ -123,6 +130,11 @@ const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
   path: '/api/trpc/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOrpcSplatRoute = ApiOrpcSplatRouteImport.update({
+  id: '/api/orpc/$',
+  path: '/api/orpc/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiIBootinfoRoute = ApiIBootinfoRouteImport.update({
   id: '/api/i/bootinfo',
   path: '/api/i/bootinfo',
@@ -155,11 +167,13 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/api/version': typeof ApiVersionRoute
   '/demo/mcp-todos': typeof DemoMcpTodosRoute
+  '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/api/i/bootinfo': typeof ApiIBootinfoRoute
+  '/api/orpc/$': typeof ApiOrpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/mcp-todos': typeof DemoApiMcpTodosRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -180,11 +194,13 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/version': typeof ApiVersionRoute
   '/demo/mcp-todos': typeof DemoMcpTodosRoute
+  '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/api/i/bootinfo': typeof ApiIBootinfoRoute
+  '/api/orpc/$': typeof ApiOrpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/mcp-todos': typeof DemoApiMcpTodosRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -206,11 +222,13 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/api/version': typeof ApiVersionRoute
   '/demo/mcp-todos': typeof DemoMcpTodosRoute
+  '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/demo/trpc-todo': typeof DemoTrpcTodoRoute
   '/api/i/bootinfo': typeof ApiIBootinfoRoute
+  '/api/orpc/$': typeof ApiOrpcSplatRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
   '/demo/api/mcp-todos': typeof DemoApiMcpTodosRoute
   '/demo/api/names': typeof DemoApiNamesRoute
@@ -233,11 +251,13 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/version'
     | '/demo/mcp-todos'
+    | '/demo/orpc-todo'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/api/i/bootinfo'
+    | '/api/orpc/$'
     | '/api/trpc/$'
     | '/demo/api/mcp-todos'
     | '/demo/api/names'
@@ -258,11 +278,13 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/version'
     | '/demo/mcp-todos'
+    | '/demo/orpc-todo'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/api/i/bootinfo'
+    | '/api/orpc/$'
     | '/api/trpc/$'
     | '/demo/api/mcp-todos'
     | '/demo/api/names'
@@ -283,11 +305,13 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/version'
     | '/demo/mcp-todos'
+    | '/demo/orpc-todo'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
     | '/demo/trpc-todo'
     | '/api/i/bootinfo'
+    | '/api/orpc/$'
     | '/api/trpc/$'
     | '/demo/api/mcp-todos'
     | '/demo/api/names'
@@ -309,11 +333,13 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   ApiVersionRoute: typeof ApiVersionRoute
   DemoMcpTodosRoute: typeof DemoMcpTodosRoute
+  DemoOrpcTodoRoute: typeof DemoOrpcTodoRoute
   DemoStoreRoute: typeof DemoStoreRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
   DemoTrpcTodoRoute: typeof DemoTrpcTodoRoute
   ApiIBootinfoRoute: typeof ApiIBootinfoRoute
+  ApiOrpcSplatRoute: typeof ApiOrpcSplatRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
   DemoApiMcpTodosRoute: typeof DemoApiMcpTodosRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
@@ -371,6 +397,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/store'
       fullPath: '/demo/store'
       preLoaderRoute: typeof DemoStoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/orpc-todo': {
+      id: '/demo/orpc-todo'
+      path: '/demo/orpc-todo'
+      fullPath: '/demo/orpc-todo'
+      preLoaderRoute: typeof DemoOrpcTodoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/mcp-todos': {
@@ -457,6 +490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTrpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/orpc/$': {
+      id: '/api/orpc/$'
+      path: '/api/orpc/$'
+      fullPath: '/api/orpc/$'
+      preLoaderRoute: typeof ApiOrpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/i/bootinfo': {
       id: '/api/i/bootinfo'
       path: '/api/i/bootinfo'
@@ -501,11 +541,13 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   ApiVersionRoute: ApiVersionRoute,
   DemoMcpTodosRoute: DemoMcpTodosRoute,
+  DemoOrpcTodoRoute: DemoOrpcTodoRoute,
   DemoStoreRoute: DemoStoreRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
   DemoTrpcTodoRoute: DemoTrpcTodoRoute,
   ApiIBootinfoRoute: ApiIBootinfoRoute,
+  ApiOrpcSplatRoute: ApiOrpcSplatRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
   DemoApiMcpTodosRoute: DemoApiMcpTodosRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,

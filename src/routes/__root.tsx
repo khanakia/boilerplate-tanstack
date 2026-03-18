@@ -10,6 +10,8 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type { TRPCRouter } from "@/integrations/trpc/routers";
+import type { RouterUtils } from "@orpc/tanstack-query";
+import type { ORPCClient } from "@/integrations/orpc/react";
 import { Provider } from "../integrations/tanstack-query/root-provider";
 import Header from "../components/Header";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -20,6 +22,8 @@ interface MyRouterContext {
 	queryClient: QueryClient;
 
 	trpc: TRPCOptionsProxy<TRPCRouter>;
+
+	orpc: RouterUtils<ORPCClient>;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
