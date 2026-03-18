@@ -1,20 +1,20 @@
-import { Command } from 'commander'
-import { registerSecretsUpdate } from './commands/secrets-update.js'
-import { registerSecretsPush } from './commands/secrets-push.js'
-import { registerSecretsRead } from './commands/secrets-read.js'
-import { registerSecretsClean } from './commands/secrets-clean.js'
-import { registerSecretsList } from './commands/secrets-list.js'
-import { registerEnvSetup } from './commands/env-setup.js'
-import { registerEnvCreate } from './commands/env-create.js'
-import { registerEnvNormalize } from './commands/env-normalize.js'
-import { registerEnvGenerate } from './commands/env-generate.js'
+import { Command } from "commander"
+import { registerEnvCreate } from "./commands/env-create.js"
+import { registerEnvGenerate } from "./commands/env-generate.js"
+import { registerEnvNormalize } from "./commands/env-normalize.js"
+import { registerEnvSetup } from "./commands/env-setup.js"
+import { registerSecretsClean } from "./commands/secrets-clean.js"
+import { registerSecretsList } from "./commands/secrets-list.js"
+import { registerSecretsPush } from "./commands/secrets-push.js"
+import { registerSecretsRead } from "./commands/secrets-read.js"
+import { registerSecretsUpdate } from "./commands/secrets-update.js"
 
 const program = new Command()
 
 program
-  .name('scripts')
-  .description('DevOps CLI for secrets management and deployment')
-  .version('1.0.0')
+	.name("scripts")
+	.description("DevOps CLI for secrets management and deployment")
+	.version("1.0.0")
 
 registerSecretsUpdate(program)
 registerSecretsPush(program)

@@ -1,7 +1,7 @@
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod/v4";
-import { drizzleEnv } from "@/integrations/drizzle/env";
-import { sentryEnv } from "@/integrations/sentry/env";
+import { createEnv } from "@t3-oss/env-core"
+import { z } from "zod/v4"
+// import { drizzleEnv } from "@/integrations/drizzle/env";
+import { sentryEnv } from "@/integrations/sentry/env"
 
 /**
  * Server-side environment variables
@@ -23,7 +23,10 @@ export const env = createEnv({
 		VITE_APP_BUILD_TIME: z.string().default("unknown"),
 	},
 
-	extends: [drizzleEnv, sentryEnv],
+	extends: [
+		// drizzleEnv,
+		sentryEnv,
+	],
 
 	runtimeEnv: {
 		NODE_ENV: process.env.NODE_ENV,
@@ -35,10 +38,13 @@ export const env = createEnv({
 	},
 
 	onValidationError: (issues) => {
-		console.error("Invalid environment variables:", JSON.stringify(issues, null, 2));
-		throw new Error("Invalid environment variables");
+		console.error(
+			"Invalid environment variables:",
+			JSON.stringify(issues, null, 2),
+		)
+		throw new Error("Invalid environment variables")
 	},
 
 	skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 	emptyStringAsUndefined: true,
-});
+})
