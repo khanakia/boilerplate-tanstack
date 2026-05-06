@@ -14,6 +14,7 @@ count.txt
 .vinxi
 todos.json
 mcp-todos.json
+tmp/
 
 # Keys directory (keep structure, ignore contents)
 _keys/*

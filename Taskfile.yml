@@ -17,3 +17,51 @@ includes:
   gql:
     taskfile: src/integrations/graphql-codegen/Taskfile.yml
     dir: .
+
+tasks:
+  dev:
+    desc: run vite dev (foreground), tee logs to tmp/dev.log
+    cmds:
+      - mkdir -p tmp
+      - pnpm dev 2>&1 | tee tmp/dev.log
+
+  dev:bg:
+    desc: run vite dev in background, logs → tmp/dev.log (pid → tmp/dev.pid)
+    cmds:
+      - mkdir -p tmp
+      - |
+        if [ -f tmp/dev.pid ] && kill -0 "$(cat tmp/dev.pid)" 2>/dev/null; then
+          echo "dev already running (pid $(cat tmp/dev.pid)). Run 'task dev:stop' first."
+          exit 1
+        fi
+        : > tmp/dev.log
+        nohup pnpm dev > tmp/dev.log 2>&1 &
+        echo $! > tmp/dev.pid
+        echo "started pid $(cat tmp/dev.pid). tail: tmp/dev.log"
+
+  dev:stop:
+    desc: stop background vite dev started via dev:bg
+    cmds:
+      - |
+        if [ -f tmp/dev.pid ]; then
+          PID=$(cat tmp/dev.pid)
+          if kill -0 "$PID" 2>/dev/null; then
+            kill "$PID" && echo "killed $PID"
+          else
+            echo "pid $PID not running"
+          fi
+          rm -f tmp/dev.pid
+        else
+          echo "no tmp/dev.pid"
+        fi
+
+  dev:logs:
+    desc: tail tmp/dev.log
+    cmds:
+      - tail -f tmp/dev.log
+
+  dev:portless:
+    desc: run vite via portless (dynamic port) → https://app.localhost — logs → tmp/dev.log
+    cmds:
+      - mkdir -p tmp
+      - portless 2>&1 | tee tmp/dev.log
